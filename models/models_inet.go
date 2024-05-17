@@ -1,0 +1,15 @@
+package models
+
+// * เส้น POST (ส่งข้อมูล) [BodyParser : การรับข้อมูลในรูปแบบ JSON]
+type Person struct {
+	//ส่วนเก็บข้อมูลไว้ใน GO
+	Name string `json:"name"`
+	Pass string `json:"pass"`
+}
+
+//*Connect to database
+type User struct {
+	Name     string `json:"name" validate:"required,min=3,max=32"`
+	IsActive *bool  `json:"isactive" validate:"required"`
+	Email    string `json:"email,omitempty" validate:"required,email,min=3,max=32"`
+}
