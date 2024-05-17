@@ -12,6 +12,9 @@ func InetRoutes(app *fiber.App) {
 	api := app.Group("/api")
 	// v1
 	v1 := api.Group("/v1")
+
+	// v3
+	v3 := api.Group("/v3")
 	// ! Result : /api/v1
 
 	// * [Middleware && Basic Authentication]
@@ -38,4 +41,7 @@ func InetRoutes(app *fiber.App) {
 
 	//* [Validation]
 	v1.Post("/valid", controllers.PostStatus)
+
+	//5_2
+	v3.Post("/pab", controllers.QueryTax)
 }

@@ -37,6 +37,12 @@ func QuerySearch(c *fiber.Ctx) error {
 	return c.JSON(str)
 }
 
+func QueryTax(c *fiber.Ctx) error {
+	a := c.Query("search") // ถ้า Search มาจาก หน้าบ้าน จะเก็บใน a
+	str := "my search is  " + a
+	return c.JSON(str)
+}
+
 // 5_1
 func FactNum51(c *fiber.Ctx) error {
 	num, err := c.ParamsInt("number")
