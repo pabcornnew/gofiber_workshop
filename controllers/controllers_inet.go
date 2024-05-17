@@ -46,9 +46,7 @@ func FactNum51(c *fiber.Ctx) error {
 	}
 	res := 1
 
-	//1*2*3*4*5
 	for i := 1; i <= num; i++ {
-		log.Println("number is ", num, " , line : ", i)
 		res *= i
 	}
 	return c.JSON(res)
