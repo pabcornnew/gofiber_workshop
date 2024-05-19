@@ -13,3 +13,14 @@ type User struct {
 	IsActive *bool  `json:"isactive" validate:"required"`
 	Email    string `json:"email,omitempty" validate:"required,email,min=3,max=32"`
 }
+
+//Regiter
+type Register struct {
+	Email         string `json:"email"`
+	Username      string `json:"username"`
+	Password      string `json:"password"`
+	Line          string `json:"line"`
+	Phon          string `json:"phon"`
+	Business_type string `json:"business"`
+	Url           string `json:"url"`
+}

@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	m "go-fiber-test/models"
 	"log"
+	"regexp"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
@@ -89,4 +91,57 @@ func PostStatus(c *fiber.Ctx) error {
 	// }
 
 	return c.JSON(user)
+}
+
+// 6
+func Register(c *fiber.Ctx) error {
+	p := new(m.Register)
+
+	if err := c.BodyParser(p); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "cannot parse JSON",
+		})
+	}
+
+	// Validate username
+	match, _ := regexp.MatchString(`^[a-zA-Z0-9_-]+$`, p.Username)
+	if !match {
+		return c.Status(fiber.StatusBadRequest).SendString("ชื่อผู้ใช้งานต้องประกอบด้วยตัวอักษร a-z, A-Z, ตัวเลข 0-9, หรือเครื่องหมาย _ หรือ - เท่านั้น")
+	}
+
+	// Validate password length
+	if len(p.Password) < 6 || len(p.Password) > 20 {
+		return c.Status(fiber.StatusBadRequest).SendString("ความยาวของรหัสผ่านต้องมากกว่า 6 และไม่เกิน 20 ตัวอักษร")
+	}
+
+	// Validate phone number length
+	if len(p.Phon) < 10 {
+		return c.Status(fiber.StatusBadRequest).SendString("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (อย่างน้อย 10 ตัวอักษร)")
+	}
+
+	// Validate business type
+	if p.Business_type == "" {
+		return c.Status(fiber.StatusBadRequest).SendString("กรุณากรอกประเภทธุรกิจ")
+	}
+
+	// Validate URL
+	if p.Url == "" {
+		return c.Status(fiber.StatusBadRequest).SendString("กรุณากรอกชื่อเว็บไซต์")
+	}
+
+	// Log data
+	log.Println(p.Username)
+	log.Println(p.Password)
+	log.Println(p.Line)
+	log.Println(p.Phon)
+	log.Println(p.Business_type)
+	log.Println(p.Url)
+
+	// Respond with success
+	str := fmt.Sprintf("Email: %s\nUsername: %s\nPassword: %s\nLine: %s\nPhon: %s\nBusiness Type: %s\nUrl: %s",
+		p.Email, p.Username, p.Password, p.Line, p.Phon, p.Business_type, p.Url)
+
+	return c.JSON(fiber.Map{
+		"message": str,
+	})
 }
