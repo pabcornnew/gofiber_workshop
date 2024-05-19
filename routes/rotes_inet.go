@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"go-fiber-test/controllers"
+	c "go-fiber-test/controllers"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
@@ -27,21 +27,21 @@ func InetRoutes(app *fiber.App) {
 		},
 	}))
 
-	v1.Get("/", controllers.HelloWorld)
+	v1.Get("/", c.HelloWorld)
 
-	v1.Post("/", controllers.PostNameandPass)
+	v1.Post("/", c.PostNameandPass)
 
 	// * [Params]
-	v1.Get("/fact/:number", controllers.FactNum51)
+	v1.Get("/fact/:number", c.FactNum51)
 
-	v1.Get("/user/:name", controllers.GetUserByName)
+	v1.Get("/user/:name", c.GetUserByName)
 
 	// * [Query]
-	v1.Post("/inet", controllers.QuerySearch)
+	v1.Post("/inet", c.QuerySearch)
 
 	//* [Validation]
-	v1.Post("/valid", controllers.PostStatus)
+	v1.Post("/valid", c.PostStatus)
 
 	//5_2
-	v3.Post("/pab", controllers.QueryTax)
+	v3.Post("/pab", c.AsciiQuery)
 }

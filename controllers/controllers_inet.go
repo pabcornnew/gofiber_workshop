@@ -3,6 +3,7 @@ package controllers
 import (
 	m "go-fiber-test/models"
 	"log"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -37,10 +38,19 @@ func QuerySearch(c *fiber.Ctx) error {
 	return c.JSON(str)
 }
 
-func QueryTax(c *fiber.Ctx) error {
-	a := c.Query("search") // ถ้า Search มาจาก หน้าบ้าน จะเก็บใน a
-	str := "my search is  " + a
-	return c.JSON(str)
+// 5_2
+func AsciiQuery(c *fiber.Ctx) error {
+	queryParam := c.Query("tax_id")
+
+	var result string
+	var text string
+
+	for _, v := range queryParam {
+		result = strconv.Itoa(int(v))
+		text += " " + result
+	}
+	// str := "my search is  " + queryParam
+	return c.JSON(text)
 }
 
 // 5_1
