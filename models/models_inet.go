@@ -27,6 +27,13 @@ type Register struct {
 	Url           string `json:"url"`
 }
 
+// 7_2
+type GetDogsJson struct {
+	Name  string `json:"name"`
+	DogID int    `json:"dog_id"`
+	Type  string `json:"type"`
+}
+
 type Dogs struct {
 	gorm.Model
 	Name  string `json:"name"`

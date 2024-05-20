@@ -259,6 +259,57 @@ func GetDogsJson(c *fiber.Ctx) error {
 	return c.Status(200).JSON(r)
 }
 
+// 7_2
+func GetDogJson(c *fiber.Ctx) error {
+	db := database.DBConn
+	var dogs []m.Dogs
+
+	db.Find(&dogs) //10ตัว
+
+	var dataResults []m.GetDogsJson
+
+	colorCounters := map[string]int{
+		"red":      0,
+		"green":    0,
+		"pink":     0,
+		"no color": 0,
+	}
+	//1 inet 112 //2 inet1 113
+	for _, v := range dogs {
+		typeStr := ""
+		if v.DogID >= 10 && v.DogID <= 50 {
+			typeStr = "red"
+		} else if v.DogID >= 100 && v.DogID <= 150 {
+			typeStr = "green"
+		} else if v.DogID >= 200 && v.DogID <= 250 {
+			typeStr = "pink"
+		} else {
+			typeStr = "no color"
+		}
+
+		colorCounters[typeStr]++
+
+		d := m.GetDogsJson{
+			Name:  v.Name,  //inet1
+			DogID: v.DogID, //113
+			Type:  typeStr, //green
+		}
+		dataResults = append(dataResults, d)
+		// sumAmount += v.Amount
+	}
+
+	r := m.ResultData{
+		Data:         dataResults,
+		Name:         "golang-test",
+		Count:        len(dogs), // Total number of dogs
+		RedCount:     colorCounters["red"],
+		GreenCount:   colorCounters["green"],
+		PinkCount:    colorCounters["pink"],
+		NoColorCount: colorCounters["no color"],
+	}
+	return c.Status(200).JSON(r)
+}
+
 // 7_1
 func GetDogsScope(c *fiber.Ctx) error {
 	db := database.DBConn
@@ -270,6 +321,8 @@ func GetDogsScope(c *fiber.Ctx) error {
 	return c.Status(200).JSON(dogs)
 
 }
+
+// 7_2
 
 // company
 // Create a new company
