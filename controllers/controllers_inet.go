@@ -208,6 +208,15 @@ func RemoveDog(c *fiber.Ctx) error {
 	return c.SendStatus(200)
 }
 
+func ShowDeletedDogs(c *fiber.Ctx) error {
+	db := database.DBConn
+	var dogs []m.Dogs
+
+	db.Unscoped().Where("deleted_at IS NOT NULL").Find(&dogs)
+
+	return c.Status(200).JSON(dogs)
+}
+
 // 7.0
 func GetDogsJson(c *fiber.Ctx) error {
 	db := database.DBConn
@@ -286,5 +295,30 @@ func ReadSomeCompany(c *fiber.Ctx) error {
 }
 
 // Update a company
+func UpdateCompany(c *fiber.Ctx) error {
+	db := database.DBConn
+	var company m.Company
+	id := c.Params("id")
+
+	if err := c.BodyParser(&company); err != nil {
+		return c.Status(503).SendString(err.Error())
+	}
+
+	db.Where("id = ?", id).Updates(&company)
+	return c.Status(200).JSON(company)
+}
 
 // Delete a company
+func RemoveCompany(c *fiber.Ctx) error {
+	db := database.DBConn
+	id := c.Params("id")
+	var company m.Company
+
+	result := db.Delete(&company, id)
+
+	if result.RowsAffected == 0 {
+		return c.SendStatus(404)
+	}
+
+	return c.SendStatus(200)
+}
