@@ -45,7 +45,7 @@ type ResultData struct {
 	Count int       `json:"count"`
 }
 
-// 7_3
+// 7_0
 type Company struct {
 	gorm.Model
 	ComID   int    `json:"com_id"`
