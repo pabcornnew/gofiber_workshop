@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"go-fiber-test/controllers"
 	c "go-fiber-test/controllers"
 
 	"github.com/gofiber/fiber/v2"
@@ -44,4 +45,13 @@ func InetRoutes(app *fiber.App) {
 
 	//5_2
 	v3.Post("/pab", c.AsciiQuery)
+
+	//CRUD dogs
+	dog := v1.Group("/dog")
+	dog.Get("", controllers.GetDogs)
+	dog.Get("/filter", controllers.GetDog)
+	dog.Get("/json", controllers.GetDogsJson)
+	dog.Post("/", controllers.AddDog)
+	dog.Put("/:id", controllers.UpdateDog)
+	dog.Delete("/:id", controllers.RemoveDog)
 }

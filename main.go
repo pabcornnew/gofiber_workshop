@@ -1,35 +1,37 @@
 package main
 
 import (
+	"fmt"
+	database "go-fiber-test/database"
+	m "go-fiber-test/models"
 	"go-fiber-test/routes"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func main() {
 	app := fiber.New() // * ใช้ libary (fiber)
+	initDatabase()
 	routes.InetRoutes(app)
-	/*
-		! Fiber.Ctx = Context
-		* เช่น BodyParser
-
-		BodyParser = การรับค่าข้อมูลมาจากทาง KeyBorad
-	*/
-
-	/* (Status Code)
-	! 400 : Fail
-	! 401 : Token is invalid
-	! 402 : Login is true but you not use this page (Access denied)
-	! 403 : Record not found
-	! 404 : Not found
-
-	* 200 : Success
-	* 201 : Create Success
-
-	* 500 :  Internal Server Error
-	* 502 : Sever Fail
-	*/
-
-	// * กำหนด Post (เปิด Server)
 	app.Listen(":3000")
+}
+
+func initDatabase() {
+	dsn := fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true&loc=Local",
+		"root",
+		"",
+		"127.0.0.1",
+		"3306",
+		"golang_test",
+	)
+	var err error
+	database.DBConn, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Database connected!")
+	database.DBConn.AutoMigrate(&m.Dogs{})
 }

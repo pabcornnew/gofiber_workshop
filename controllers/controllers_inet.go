@@ -2,13 +2,16 @@ package controllers
 
 import (
 	"fmt"
+	database "go-fiber-test/database"
 	m "go-fiber-test/models"
 	"log"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 func HelloWorld(c *fiber.Ctx) error {
@@ -103,33 +106,27 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	// Validate username
 	match, _ := regexp.MatchString(`^[a-zA-Z0-9_-]+$`, p.Username)
 	if !match {
 		return c.Status(fiber.StatusBadRequest).SendString("ชื่อผู้ใช้งานต้องประกอบด้วยตัวอักษร a-z, A-Z, ตัวเลข 0-9, หรือเครื่องหมาย _ หรือ - เท่านั้น")
 	}
 
-	// Validate password length
 	if len(p.Password) < 6 || len(p.Password) > 20 {
 		return c.Status(fiber.StatusBadRequest).SendString("ความยาวของรหัสผ่านต้องมากกว่า 6 และไม่เกิน 20 ตัวอักษร")
 	}
 
-	// Validate phone number length
 	if len(p.Phon) < 10 {
 		return c.Status(fiber.StatusBadRequest).SendString("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (อย่างน้อย 10 ตัวอักษร)")
 	}
 
-	// Validate business type
 	if p.Business_type == "" {
 		return c.Status(fiber.StatusBadRequest).SendString("กรุณากรอกประเภทธุรกิจ")
 	}
 
-	// Validate URL
 	if p.Url == "" {
 		return c.Status(fiber.StatusBadRequest).SendString("กรุณากรอกชื่อเว็บไซต์")
 	}
 
-	// Log data
 	log.Println(p.Username)
 	log.Println(p.Password)
 	log.Println(p.Line)
@@ -137,11 +134,118 @@ func Register(c *fiber.Ctx) error {
 	log.Println(p.Business_type)
 	log.Println(p.Url)
 
-	// Respond with success
 	str := fmt.Sprintf("Email: %s\nUsername: %s\nPassword: %s\nLine: %s\nPhon: %s\nBusiness Type: %s\nUrl: %s",
 		p.Email, p.Username, p.Password, p.Line, p.Phon, p.Business_type, p.Url)
 
 	return c.JSON(fiber.Map{
 		"message": str,
 	})
+}
+
+func DogIDGreaterThan100(db *gorm.DB) *gorm.DB {
+	return db.Where("dog_id > ?", 100)
+}
+
+func GetDogs(c *fiber.Ctx) error {
+	db := database.DBConn
+	var dogs []m.Dogs
+
+	db.Find(&dogs) //delelete = null
+	return c.Status(200).JSON(dogs)
+}
+
+func GetDog(c *fiber.Ctx) error {
+	db := database.DBConn
+	search := strings.TrimSpace(c.Query("search"))
+	var dog []m.Dogs
+
+	result := db.Find(&dog, "dog_id = ?", search)
+
+	// returns found records count, equals `len(users)
+	if result.RowsAffected == 0 {
+		return c.SendStatus(404)
+	}
+	return c.Status(200).JSON(&dog)
+}
+
+func AddDog(c *fiber.Ctx) error {
+	//twst3
+	db := database.DBConn
+	var dog m.Dogs
+
+	if err := c.BodyParser(&dog); err != nil {
+		return c.Status(503).SendString(err.Error())
+	}
+
+	db.Create(&dog)
+	return c.Status(201).JSON(dog)
+}
+
+func UpdateDog(c *fiber.Ctx) error {
+	db := database.DBConn
+	var dog m.Dogs
+	id := c.Params("id")
+
+	if err := c.BodyParser(&dog); err != nil {
+		return c.Status(503).SendString(err.Error())
+	}
+
+	db.Where("id = ?", id).Updates(&dog)
+	return c.Status(200).JSON(dog)
+}
+
+func RemoveDog(c *fiber.Ctx) error {
+	db := database.DBConn
+	id := c.Params("id")
+	var dog m.Dogs
+
+	result := db.Delete(&dog, id)
+
+	if result.RowsAffected == 0 {
+		return c.SendStatus(404)
+	}
+
+	return c.SendStatus(200)
+}
+
+// 7.0
+func GetDogsJson(c *fiber.Ctx) error {
+	db := database.DBConn
+	var dogs []m.Dogs // Adjust model name according to your project
+	var dataResults []m.DogsRes
+
+	// Fetch dogs from the database
+	db.Find(&dogs) // Assuming this retrieves 10 dogs
+
+	// Process each dog
+	for _, v := range dogs {
+		typeStr := ""
+		switch v.DogID {
+		case 111:
+			typeStr = "red"
+		case 113:
+			typeStr = "green"
+		case 999:
+			typeStr = "pink"
+		default:
+			typeStr = "no color"
+		}
+
+		d := m.DogsRes{
+			Name:  v.Name,
+			DogID: v.DogID,
+			Type:  typeStr,
+		}
+		dataResults = append(dataResults, d)
+	}
+
+	// Create the result data
+	r := m.ResultData{
+		Data:  dataResults,
+		Name:  "golang-test",
+		Count: len(dogs),
+	}
+
+	// Return the result as JSON
+	return c.Status(200).JSON(r)
 }
