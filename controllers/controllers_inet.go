@@ -249,3 +249,42 @@ func GetDogsJson(c *fiber.Ctx) error {
 	// Return the result as JSON
 	return c.Status(200).JSON(r)
 }
+
+// company
+// Create a new company
+func CreateCompany(c *fiber.Ctx) error {
+	db := database.DBConn
+	var company m.Company
+	if err := c.BodyParser(&company); err != nil {
+		return c.Status(503).SendString(err.Error())
+	}
+	db.Create(&company)
+	return c.Status(201).JSON(company)
+}
+
+// Get all companies
+func GetAllCompany(c *fiber.Ctx) error {
+	db := database.DBConn
+	var company []m.Company
+	db.Find(&company)
+	return c.Status(200).JSON(company)
+}
+
+// Get a single company by ID
+func ReadSomeCompany(c *fiber.Ctx) error {
+	db := database.DBConn
+	search := strings.TrimSpace(c.Query("search"))
+	var company []m.Company
+
+	result := db.Find(&company, "com_id = ?", search)
+
+	if result.RowsAffected == 0 {
+		return c.SendStatus(404)
+	}
+	return c.Status(200).JSON(company)
+
+}
+
+// Update a company
+
+// Delete a company
