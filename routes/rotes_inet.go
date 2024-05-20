@@ -55,6 +55,8 @@ func InetRoutes(app *fiber.App) {
 	dog.Put("/:id", controllers.UpdateDog)
 	dog.Delete("/:id", controllers.RemoveDog)
 	dog.Get("/deleted", controllers.ShowDeletedDogs)
+	//7_1
+	dog.Get("/scope", controllers.GetDogsScope)
 
 	//CRUD company
 	company := v1.Group("/company")
@@ -63,7 +65,4 @@ func InetRoutes(app *fiber.App) {
 	company.Post("/", controllers.CreateCompany)
 	company.Put("/:id", controllers.UpdateCompany)
 	company.Delete("/:id", controllers.RemoveCompany)
-
-	//7_1
-
 }

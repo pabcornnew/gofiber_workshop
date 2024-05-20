@@ -217,7 +217,7 @@ func ShowDeletedDogs(c *fiber.Ctx) error {
 	return c.Status(200).JSON(dogs)
 }
 
-// 7.0
+// 7_0
 func GetDogsJson(c *fiber.Ctx) error {
 	db := database.DBConn
 	var dogs []m.Dogs // Adjust model name according to your project
@@ -257,6 +257,18 @@ func GetDogsJson(c *fiber.Ctx) error {
 
 	// Return the result as JSON
 	return c.Status(200).JSON(r)
+}
+
+// 7_1
+func GetDogsScope(c *fiber.Ctx) error {
+	db := database.DBConn
+	var dogs []m.Dogs
+
+	// Use the scope to filter the dogs
+	db.Scopes(m.DogIDBetween50And100).Find(&dogs)
+
+	return c.Status(200).JSON(dogs)
+
 }
 
 // company

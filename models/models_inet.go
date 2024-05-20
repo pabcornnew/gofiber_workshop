@@ -54,3 +54,8 @@ type Company struct {
 	Email   string `json:"email"`
 	Phone   string `json:"phone"`
 }
+
+// 7_1
+func DogIDBetween50And100(db *gorm.DB) *gorm.DB {
+	return db.Where("dog_id > ? AND dog_id < ?", 50, 100)
+}
