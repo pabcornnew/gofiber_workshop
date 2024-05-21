@@ -28,12 +28,6 @@ type Register struct {
 }
 
 // 7_2
-type GetDogsJson struct {
-	Name  string `json:"name"`
-	DogID int    `json:"dog_id"`
-	Type  string `json:"type"`
-}
-
 type Dogs struct {
 	gorm.Model
 	Name  string `json:"name"`
@@ -47,9 +41,13 @@ type DogsRes struct {
 }
 
 type ResultData struct {
-	Data  []DogsRes `json:"data"`
-	Name  string    `json:"name"`
-	Count int       `json:"count"`
+	Data         []DogsRes `json:"data"`
+	Name         string    `json:"name"`
+	Count        int       `json:"count"`
+	RedCount     int       `json:"red_count"`
+	GreenCount   int       `json:"green_count"`
+	PinkCount    int       `json:"pink_count"`
+	NoColorCount int       `json:"no_color_count"`
 }
 
 // 7_0

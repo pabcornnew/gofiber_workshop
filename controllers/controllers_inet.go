@@ -266,7 +266,7 @@ func GetDogJson(c *fiber.Ctx) error {
 
 	db.Find(&dogs) //10ตัว
 
-	var dataResults []m.GetDogsJson
+	var dataResults []m.DogsRes
 
 	colorCounters := map[string]int{
 		"red":      0,
@@ -289,7 +289,7 @@ func GetDogJson(c *fiber.Ctx) error {
 
 		colorCounters[typeStr]++
 
-		d := m.GetDogsJson{
+		d := m.DogsRes{
 			Name:  v.Name,  //inet1
 			DogID: v.DogID, //113
 			Type:  typeStr, //green
