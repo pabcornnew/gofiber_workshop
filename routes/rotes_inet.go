@@ -13,9 +13,19 @@ func InetRoutes(app *fiber.App) {
 	api := app.Group("/api")
 	// v1
 	v1 := api.Group("/v1")
+	profile := v1.Group("/profiles")
+	profile.Get("", controllers.GetAllProfile)
+
+	//final_project profile
+	profile.Get("/f", controllers.ReadSomeProfile)
+	profile.Post("/", controllers.CreateProfile)
+	profile.Put("/:id", controllers.UpdateProfile)
+	profile.Delete("/:id", controllers.RemoveProfile)
+	profile.Get("/json", controllers.GetJsonProfile)
 
 	// v3
 	v3 := api.Group("/v3")
+
 	// ! Result : /api/v1
 
 	// * [Middleware && Basic Authentication]
@@ -25,6 +35,7 @@ func InetRoutes(app *fiber.App) {
 		Users: map[string]string{
 			//5_0
 			"gofiber": "21022566", // * username && password
+			"testgo":  "23012023",
 		},
 	}))
 
@@ -57,6 +68,8 @@ func InetRoutes(app *fiber.App) {
 	dog.Get("/deleted", controllers.ShowDeletedDogs)
 	//7_1
 	dog.Get("/scope", controllers.GetDogsScope)
+	//7_2
+	dog.Get("/json2", controllers.GetDogJson)
 
 	//CRUD company
 	company := v1.Group("/company")
@@ -65,4 +78,5 @@ func InetRoutes(app *fiber.App) {
 	company.Post("/", controllers.CreateCompany)
 	company.Put("/:id", controllers.UpdateCompany)
 	company.Delete("/:id", controllers.RemoveCompany)
+
 }

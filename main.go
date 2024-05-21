@@ -11,13 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func main() {
-	app := fiber.New() // * ใช้ libary (fiber)
-	initDatabase()
-	routes.InetRoutes(app)
-	app.Listen(":3000")
-}
-
 func initDatabase() {
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true&loc=Local",
@@ -35,4 +28,12 @@ func initDatabase() {
 	fmt.Println("Database connected!")
 	database.DBConn.AutoMigrate(&m.Dogs{})
 	database.DBConn.AutoMigrate(&m.Company{})
+	database.DBConn.AutoMigrate(&m.Profile{})
+}
+
+func main() {
+	app := fiber.New() // * ใช้ libary (fiber)
+	initDatabase()
+	routes.InetRoutes(app)
+	app.Listen(":3000")
 }

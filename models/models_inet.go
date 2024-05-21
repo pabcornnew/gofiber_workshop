@@ -64,3 +64,37 @@ type Company struct {
 func DogIDBetween50And100(db *gorm.DB) *gorm.DB {
 	return db.Where("dog_id > ? AND dog_id < ?", 50, 100)
 }
+
+// Final Project
+type Profile struct {
+	gorm.Model
+	EmpID     int    `json:"employee_id"`
+	Name      string `json:"name"`
+	LastName  string `json:"lastname"`
+	BirthDay  string `json:"birthday"`
+	Age       int    `json:"age"`
+	Email     string `json:"email"`
+	Telephone string `json:"tel"`
+}
+
+type GetUserProfile struct {
+	EmpID     int    `json:"employee_id"`
+	Name      string `json:"name"`
+	LastName  string `json:"lastname"`
+	BirthDay  string `json:"birthday"`
+	Age       int    `json:"age"`
+	Email     string `json:"email"`
+	Telephone string `json:"tel"`
+	Type      string `json:"type"`
+}
+
+type ResProfile struct {
+	Data       []GetUserProfile `json:"data"`
+	Name       string           `json:"name"`
+	Count      int              `json:"count"`
+	GenZ       int              `json:"genz"`
+	GenX       int              `json:"genx"`
+	GenY       int              `json:"geny"`
+	BabyBoomer int              `json:"babyboomer"`
+	GI         int              `json:"gi"`
+}

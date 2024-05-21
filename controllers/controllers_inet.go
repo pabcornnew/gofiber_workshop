@@ -387,3 +387,180 @@ func RemoveCompany(c *fiber.Ctx) error {
 
 	return c.SendStatus(200)
 }
+
+// Profile
+// Create
+func CreateProfile(c *fiber.Ctx) error {
+	db := database.DBConn
+	var profile m.Profile
+	if err := c.BodyParser(&profile); err != nil {
+		return c.Status(503).SendString(err.Error())
+	}
+	db.Create(&profile)
+	fmt.Println(profile)
+	return c.Status(201).JSON(profile)
+}
+
+// Read
+func GetAllProfile(c *fiber.Ctx) error {
+	db := database.DBConn
+	var profile []m.Profile
+	db.Find(&profile)
+
+	return c.Status(200).JSON(profile)
+}
+
+func ReadSomeProfile(c *fiber.Ctx) error {
+	db := database.DBConn
+	search := strings.TrimSpace(c.Query("search"))
+	fmt.Println(search)
+	var profile []m.Profile
+	// result := db.Find(&company, "com_id = ?", search)
+	result := db.Find(&profile, "emp_id = ? or name like ? or last_name like ?", search, search, search)
+
+	if result.RowsAffected == 0 {
+		return c.SendStatus(404)
+	}
+
+	return c.Status(200).JSON(profile)
+}
+
+// Update
+func UpdateProfile(c *fiber.Ctx) error {
+	db := database.DBConn
+	var profile m.Profile
+	id := c.Params("id")
+
+	if err := c.BodyParser(&profile); err != nil {
+		return c.Status(503).SendString(err.Error())
+	}
+
+	db.Where("id = ?", id).Updates(&profile)
+	return c.Status(200).JSON(profile)
+}
+
+// Delete
+func RemoveProfile(c *fiber.Ctx) error {
+	db := database.DBConn
+	id := c.Params("id")
+	var profile m.Profile
+
+	result := db.Delete(&profile, id)
+
+	if result.RowsAffected == 0 {
+		return c.SendStatus(404)
+	}
+
+	return c.SendStatus(200)
+}
+
+// Json
+func GetJsonProfile(c *fiber.Ctx) error {
+	db := database.DBConn
+	var profile []m.Profile
+
+	db.Find(&profile)
+
+	var dataResults []m.GetUserProfile
+
+	genType := map[string]int{
+		"GenZ":            0,
+		"GenY":            0,
+		"GenX":            0,
+		"Baby Boomer":     0,
+		"G.I. Generation": 0,
+	}
+
+	for _, v := range profile {
+		typeStr := ""
+		if v.Age < 24 {
+			typeStr = "GenZ"
+		} else if v.Age >= 24 && v.Age <= 41 {
+			typeStr = "GenY"
+		} else if v.Age >= 42 && v.Age <= 56 {
+			typeStr = "GenX"
+		} else if v.Age >= 57 && v.Age <= 75 {
+			typeStr = "Baby Boomer"
+		} else if v.Age > 75 {
+			typeStr = "G.I. Generation"
+		} else {
+			typeStr = "error"
+		}
+
+		genType[typeStr]++
+
+		emp := m.GetUserProfile{
+			EmpID:    v.EmpID,
+			Name:     v.Name,
+			LastName: v.LastName,
+			Age:      v.Age,
+			Type:     typeStr,
+		}
+		dataResults = append(dataResults, emp)
+	}
+
+	res := m.ResProfile{
+		Data:       dataResults,
+		Name:       "golang-test",
+		Count:      len(profile), // Total number of dogs
+		GenZ:       genType["GenZ"],
+		GenX:       genType["GenX"],
+		GenY:       genType["GenY"],
+		BabyBoomer: genType["Baby Boomer"],
+		GI:         genType["G.I. Generation"],
+	}
+	// return c.Status(200).JSON(res)
+	return c.Status(200).JSON(res)
+}
+
+/*
+func GetDogJson(c *fiber.Ctx) error {
+	db := database.DBConn
+	var dogs []m.Dogs
+
+	db.Find(&dogs) //10ตัว
+
+	var dataResults []m.DogsRes
+
+	colorCounters := map[string]int{
+		"red":      0,
+		"green":    0,
+		"pink":     0,
+		"no color": 0,
+	}
+	//1 inet 112 //2 inet1 113
+	for _, v := range dogs {
+		typeStr := ""
+		if v.DogID >= 10 && v.DogID <= 50 {
+			typeStr = "red"
+		} else if v.DogID >= 100 && v.DogID <= 150 {
+			typeStr = "green"
+		} else if v.DogID >= 200 && v.DogID <= 250 {
+			typeStr = "pink"
+		} else {
+			typeStr = "no color"
+		}
+
+		colorCounters[typeStr]++
+
+		d := m.DogsRes{
+			Name:  v.Name,  //inet1
+			DogID: v.DogID, //113
+			Type:  typeStr, //green
+		}
+		dataResults = append(dataResults, d)
+		// sumAmount += v.Amount
+	}
+
+	r := m.ResultData{
+		Data:         dataResults,
+		Name:         "golang-test",
+		Count:        len(dogs), // Total number of dogs
+		RedCount:     colorCounters["red"],
+		GreenCount:   colorCounters["green"],
+		PinkCount:    colorCounters["pink"],
+		NoColorCount: colorCounters["no color"],
+	}
+	return c.Status(200).JSON(r)
+}
+*/
